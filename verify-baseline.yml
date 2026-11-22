@@ -1,0 +1,35 @@
+---
+- name: Inspect a previously configured lab baseline
+  hosts: lab
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Require the intended opted-in lab platform
+      ansible.builtin.assert:
+        that:
+          - lab_baseline_opt_in | default(false) | bool
+          - ansible_facts['os_family'] == 'Debian'
+    - name: Inspect the documentation directory
+      ansible.builtin.stat:
+        path: /opt/infra-lab
+      register: baseline_directory
+    - name: Verify the directory metadata
+      ansible.builtin.assert:
+        that:
+          - baseline_directory.stat.exists
+          - baseline_directory.stat.isdir
+          - baseline_directory.stat.mode == '0750'
+          - baseline_directory.stat.pw_name == 'root'
+          - baseline_directory.stat.gr_name == 'laboperators'
+    - name: Collect installed package facts
+      ansible.builtin.package_facts:
+        manager: auto
+    - name: Verify the diagnostic packages are present
+      ansible.builtin.assert:
+        that:
+          - item in ansible_facts.packages
+      loop:
+        - ca-certificates
+        - curl
+        - htop
+        - rsync
