@@ -8,3 +8,7 @@
 
 No SSH policy, firewall, user passwords, or sudo permissions are changed.
 A real VM application and idempotence check have not been performed here.
+
+## Post-apply verification
+
+Run `ansible-playbook -i /path/to/inventory verify-baseline.yml` after applying to your lab VM. It inspects package presence and directory metadata without changing them. This verification playbook has been syntax checked; remote execution remains an exercise. SSH host key checking remains enabled.
