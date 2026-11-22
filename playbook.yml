@@ -1,0 +1,40 @@
+---
+- name: Apply a small baseline to a disposable Debian or Ubuntu lab VM
+  hosts: lab
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Require an explicitly opted-in lab host
+      ansible.builtin.assert:
+        that:
+          - lab_baseline_opt_in | default(false) | bool
+          - ansible_facts['os_family'] == 'Debian'
+        fail_msg: Use an opted-in disposable Debian or Ubuntu VM.
+    - name: Install basic diagnostic tools
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - htop
+          - rsync
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+    - name: Create a lab operator group
+      ansible.builtin.group:
+        name: laboperators
+        state: present
+    - name: Create the lab documentation directory
+      ansible.builtin.file:
+        path: /opt/infra-lab
+        state: directory
+        owner: root
+        group: laboperators
+        mode: '0750'
+    - name: Record the lab purpose
+      ansible.builtin.copy:
+        dest: /opt/infra-lab/README.txt
+        content: "Managed by the infrastructure lab.\n"
+        owner: root
+        group: laboperators
+        mode: '0640'
