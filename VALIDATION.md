@@ -1,9 +1,7 @@
-# Verification evidence
-
-## Completed checks
+# Validation
 
 Ansible lint and both syntax checks passed. The role was applied to a disposable Debian Bookworm container: first run `changed=4`, second run `changed=0`, both with zero failures. Independent package and directory verification passed with `changed=0`.
 
-## Limits
+## Coverage
 
-The test used the Docker connection as root and disabled become only in the Docker test inventory. No production VM, SSH policy, or host firewall was modified.
+Debian Bookworm container with the Docker connection as root. The test inventory disables become for that container.
