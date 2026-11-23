@@ -28,3 +28,7 @@ window. The example inventory has no live targets.
 The role does not change SSH, firewall rules, passwords, or sudo policy. See
 [operations](RUNBOOK.md) and [verification evidence](VALIDATION.md). The Docker
 inventory under `tests/` is for an isolated disposable test container only.
+
+## Project history
+
+See [history and scope](HISTORY.md) for the correction of earlier synthetic dates.
