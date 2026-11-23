@@ -1,0 +1,4 @@
+Managed Linux lab baseline
+Distribution: {{ ansible_facts['distribution'] }}
+Operator group: {{ infra_baseline_operator_group }}
+Packages: {{ infra_baseline_packages | sort | join(', ') }}

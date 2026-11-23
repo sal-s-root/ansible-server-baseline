@@ -1,22 +1,30 @@
-# Ansible server baseline
+# Ansible Linux baseline
 
-## Purpose
-
-Replace manual setup with repeatable desired-state configuration and a cautious rollout process.
-
-## Run locally
+A reusable role for disposable Debian and Ubuntu hosts, with explicit opt-in,
+tagged tasks, templated configuration, and an independent verification playbook.
 
 ```sh
+ansible-lint playbook.yml verify-baseline.yml roles/infra_baseline
 ansible-playbook -i inventory.example.ini playbook.yml --syntax-check
-# After configuring your disposable VM:
-# ansible-playbook -i /path/to/inventory playbook.yml --check --diff
+# After configuring your own lab inventory:
+ansible-playbook -i /path/to/inventory playbook.yml --check --diff
+ansible-playbook -i /path/to/inventory playbook.yml
+ansible-playbook -i /path/to/inventory verify-baseline.yml
 ```
 
-## Scope and limitations
+Apply twice to check idempotence: the second completed run should report no
+configuration changes. Package cache refreshes can change after their validity
+window. The example inventory has no live targets.
 
-Requires Ansible and a disposable Debian/Ubuntu VM for execution. The example inventory contains no active targets. Syntax validation does not demonstrate deployment or idempotence.
+## Role variables
 
-## Engineering notes
+| Variable | Default | Purpose |
+|---|---|---|
+| `infra_baseline_opt_in` | `false` | Explicit execution gate |
+| `infra_baseline_packages` | Four diagnostic packages | Desired package presence |
+| `infra_baseline_operator_group` | `laboperators` | Group owning the lab directory |
+| `infra_baseline_directory` | `/opt/infra-lab` | Managed documentation directory |
 
-See [LEARNING.md](LEARNING.md) for the design decisions, verification evidence,
-and next steps. Never commit credentials, private hostnames, or real incident data.
+The role does not change SSH, firewall rules, passwords, or sudo policy. See
+[operations](RUNBOOK.md) and [verification evidence](VALIDATION.md). The Docker
+inventory under `tests/` is for an isolated disposable test container only.

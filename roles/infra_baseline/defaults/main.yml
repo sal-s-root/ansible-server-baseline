@@ -1,0 +1,9 @@
+---
+infra_baseline_opt_in: false
+infra_baseline_packages:
+  - ca-certificates
+  - curl
+  - htop
+  - rsync
+infra_baseline_operator_group: laboperators
+infra_baseline_directory: /opt/infra-lab

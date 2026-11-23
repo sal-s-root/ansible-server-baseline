@@ -1,0 +1,40 @@
+---
+- name: Require explicit lab opt-in and a supported platform
+  ansible.builtin.assert:
+    that:
+      - infra_baseline_opt_in | bool
+      - ansible_facts['os_family'] == 'Debian'
+    fail_msg: Use an explicitly opted-in Debian or Ubuntu lab host.
+  tags: [always]
+
+- name: Install diagnostic packages
+  ansible.builtin.apt:
+    name: "{{ infra_baseline_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  tags: [packages]
+
+- name: Create the operator group
+  ansible.builtin.group:
+    name: "{{ infra_baseline_operator_group }}"
+    state: present
+  tags: [configuration]
+
+- name: Create the lab documentation directory
+  ansible.builtin.file:
+    path: "{{ infra_baseline_directory }}"
+    state: directory
+    owner: root
+    group: "{{ infra_baseline_operator_group }}"
+    mode: '0750'
+  tags: [configuration]
+
+- name: Render the managed baseline record
+  ansible.builtin.template:
+    src: baseline.txt.j2
+    dest: "{{ infra_baseline_directory }}/README.txt"
+    owner: root
+    group: "{{ infra_baseline_operator_group }}"
+    mode: '0640'
+  tags: [configuration]
